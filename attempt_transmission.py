@@ -3,9 +3,14 @@ import time
 from space_network_lib import *
 
 
+class BrokenConnectionError(CommsError):
+    pass
+
+
 
 def attempt_transmission(packet : Packet, space_netwotk : SpaceNetwork):
     while True:
+
         try:
             space_netwotk.send(packet)
             break
@@ -16,4 +21,11 @@ def attempt_transmission(packet : Packet, space_netwotk : SpaceNetwork):
 
         except DataCorruptedError:
             print('Data corrupted retrying...')
+        
+        except LinkTerminatedError:
+            raise BrokenConnectionError('lost Link')  
+
+        except OutOfRangeError:
+            raise BrokenConnectionError('Target out of range')
+
 
